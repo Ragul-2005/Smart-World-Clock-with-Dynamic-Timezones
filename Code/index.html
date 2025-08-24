@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Clock</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 1.5s ease-in-out;
+            overflow: hidden;
+            position: relative;
+            background: #181824 !important; /* Dark background */
+        }
+
+        /* Time-based background classes */
+        .dawn {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+
+        .morning {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .afternoon {
+            background: linear-gradient(135deg, #ff9a56 0%, #ffad56 100%);
+        }
+
+        .evening {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .night {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        /* Animated background elements */
+        .background-decoration {
+            display: none !important;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            background: white;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            background: white;
+            top: 60%;
+            left: 80%;
+            animation-delay: -5s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            background: white;
+            top: 80%;
+            left: 20%;
+            animation-delay: -10s;
+        }
+
+        .floating-shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            background: white;
+            top: 30%;
+            left: 70%;
+            animation-delay: -15s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-20px) rotate(360deg);
+                opacity: 0.1;
+            }
+        }
+
+        .clock-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 60px 80px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            animation: slideIn 1s ease-out;
+            position: relative;
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .clock-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(0%) translateY(0%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .time-display {
+            font-size: 4.5rem;
+            font-weight: 300;
+            color: white;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            letter-spacing: 0.1em;
+            position: relative;
+            z-index: 2;
+        }
+
+        .time-period {
+            font-size: 1.8rem;
+            margin-left: 15px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .date-display {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            font-weight: 300;
+            position: relative;
+            z-index: 2;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 15px 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .period-indicator {
+            position: static;
+            display: block;
+            margin-bottom: 18px;
+            margin-top: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            color: white;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Pulsing effect for seconds */
+        .seconds-pulse {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(0.98);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .clock-container {
+                padding: 40px 30px;
+                margin: 20px;
+                margin-top: 20px;
+            }
+            
+            .time-display {
+                font-size: 3rem;
+            }
+            
+            .time-period {
+                font-size: 1.2rem;
+            }
+            
+            .date-display {
+                font-size: 1.1rem;
+            }
+            
+            .time-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .period-indicator {
+                margin-top: 0;
+                margin-bottom: 12px;
+                display: inline-block;
+            }
+        }
+
+        /* Digital font style */
+        .digital-font {
+            font-family: 'Courier New', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Glow effect for night time */
+        .night .time-display {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .night .clock-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body id="body" class="morning">
+    <div class="background-decoration">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <div class="clock-container">
+        <div class="period-indicator" id="periodIndicator">Good Morning</div>
+        
+        <div class="date-display" id="dateDisplay">Loading...</div>
+        
+        <div class="time-display digital-font">
+            <span id="timeDisplay">00:00:00</span>
+            <span class="time-period" id="ampm">AM</span>
+        </div>
+
+        <div style="margin-bottom: 20px; text-align: center;">
+            <label for="citySelect" style="font-size: 1.1rem; color: white; margin-right: 10px;">City:</label>
+            <select id="citySelect" style="font-size: 1.1rem; padding: 5px 10px; border-radius: 8px; border: none;">
+                <option value="Asia/Kolkata">Kolkata</option>
+                <option value="America/New_York">New York</option>
+                <option value="Europe/London">London</option>
+                <option value="Asia/Tokyo">Tokyo</option>
+                <option value="Australia/Sydney">Sydney</option>
+                <option value="Europe/Paris">Paris</option>
+                <option value="America/Los_Angeles">Los Angeles</option>
+            </select>
+        </div>
+
+        <div class="time-info">
+            <div class="info-item">
+                <div class="info-label">Timezone</div>
+                <div class="info-value" id="timezone">UTC</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Day of Year</div>
+                <div class="info-value" id="dayOfYear">1</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Week</div>
+                <div class="info-value" id="weekNumber">1</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DigitalClock {
+            constructor() {
+                this.timeDisplay = document.getElementById('timeDisplay');
+                this.ampmDisplay = document.getElementById('ampm');
+                this.dateDisplay = document.getElementById('dateDisplay');
+                this.periodIndicator = document.getElementById('periodIndicator');
+                this.timezoneDisplay = document.getElementById('timezone');
+                this.dayOfYearDisplay = document.getElementById('dayOfYear');
+                this.weekNumberDisplay = document.getElementById('weekNumber');
+                this.body = document.getElementById('body');
+                this.citySelect = document.getElementById('citySelect');
+                this.selectedTimezone = this.citySelect.value;
+                this.citySelect.addEventListener('change', () => {
+                    this.selectedTimezone = this.citySelect.value;
+                    this.updateTimezone();
+                    this.updateClock();
+                    this.updateGreeting();
+                });
+                this.init();
+            }
+
+            init() {
+                this.updateClock();
+                this.updateGreeting();
+                setInterval(() => {
+                    this.updateClock();
+                    this.updateGreeting();
+                }, 1000);
+                this.updateTimezone();
+            }
+
+            updateClock() {
+                const now = new Date();
+                // Get time in selected timezone
+                const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: this.selectedTimezone };
+                const timeParts = new Intl.DateTimeFormat('en-US', options).formatToParts(now);
+                const hours = parseInt(timeParts.find(p => p.type === 'hour').value, 10);
+                const minutes = parseInt(timeParts.find(p => p.type === 'minute').value, 10);
+                const seconds = parseInt(timeParts.find(p => p.type === 'second').value, 10);
+                // Convert to 12-hour format
+                const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const formattedTime = `${this.padZero(hours12)}:${this.padZero(minutes)}:${this.padZero(seconds)}`;
+                this.timeDisplay.textContent = formattedTime;
+                this.ampmDisplay.textContent = ampm;
+                this.timeDisplay.classList.remove('seconds-pulse');
+                setTimeout(() => {
+                    this.timeDisplay.classList.add('seconds-pulse');
+                }, 50);
+                // Update date in selected timezone
+                this.updateDate(now);
+                this.updateAdditionalInfo(now);
+            }
+
+            updateDate(date) {
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    timeZone: this.selectedTimezone
+                };
+                const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
+                this.dateDisplay.textContent = formattedDate;
+            }
+
+            updateAdditionalInfo(date) {
+                // Get date in selected timezone
+                const tzDate = new Date(new Intl.DateTimeFormat('en-US', { timeZone: this.selectedTimezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(date));
+                const startOfYear = new Date(tzDate.getFullYear(), 0, 1);
+                const dayOfYear = Math.floor((tzDate - startOfYear) / (24 * 60 * 60 * 1000)) + 1;
+                this.dayOfYearDisplay.textContent = dayOfYear;
+                const weekNumber = this.getWeekNumber(tzDate);
+                this.weekNumberDisplay.textContent = weekNumber;
+            }
+
+            updateTimezone() {
+                const tz = this.selectedTimezone;
+                this.timezoneDisplay.textContent = tz.split('/').pop().replace('_', ' ');
+            }
+
+            updateGreeting() {
+                // Use selected city's time for greeting
+                const now = new Date();
+                const options = { hour: '2-digit', timeZone: this.selectedTimezone, hour12: false };
+                const hour = parseInt(new Intl.DateTimeFormat('en-US', options).format(now), 10);
+                let greeting = '';
+                if (hour >= 5 && hour < 8) {
+                    greeting = 'Good Dawn';
+                } else if (hour >= 8 && hour < 12) {
+                    greeting = 'Good Morning';
+                } else if (hour >= 12 && hour < 17) {
+                    greeting = 'Good Afternoon';
+                } else if (hour >= 17 && hour < 21) {
+                    greeting = 'Good Evening';
+                } else {
+                    greeting = 'Good Night';
+                }
+                this.periodIndicator.textContent = greeting;
+            }
+
+            padZero(num) {
+                return num.toString().padStart(2, '0');
+            }
+
+            getWeekNumber(date) {
+                const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+                const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+                return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+            }
+        }
+
+        // Initialize the clock when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new DigitalClock();
+        });
+
+        // Add some interactive features
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.clock-container')) {
+                // Create ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255,255,255,0.3);
+                    pointer-events: none;
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    width: 100px;
+                    height: 100px;
+                    left: ${e.offsetX - 50}px;
+                    top: ${e.offsetY - 50}px;
+                `;
+                
+                e.target.closest('.clock-container').appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            }
+        });
+
+        // Add CSS for ripple effect
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
