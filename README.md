@@ -69,7 +69,7 @@ The full source code is available in ['Code/index.html](Code/index.html)
 
 ## 📝 Licence
 
-This project is open-sourced under the MIT License. See the [LICENCE](LICENCE) file for details.
+This project is open-sourced under the MIT License. See the ['LICENSE'](LICENSE) file for details.
 
 ---
 
